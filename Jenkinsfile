@@ -1,44 +1,41 @@
 pipeline {
-    agent any  // Use any available agent
+    agent any
 
     tools {
-        maven 'Maven'  // Ensure this matches the name configured in Jenkins
+        maven 'Maven'
+        jdk 'JDK11'
     }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/sindhud205/MyMavenSeleniumApp05.git'
+                git branch: 'master',
+                    url: 'https://github.com/sindhud205/MyMavenSeleniumApp05.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'  // Run Maven build
+                sh 'mvn clean package'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'  // Run unit tests
+                sh 'mvn test'
             }
         }
 
-        
-        
-       
         stage('Run Application') {
             steps {
-                // Start the JAR application
-                sh 'java -Dheadless=true -jar target/MyMavenSeleniumApp05-1.0-SNAPSHOT.jar'
+                sh 'java -Dheadless=true -jar target/MyMavenSeleniumApp05-1.0-SNAPSHOT-jar-with-dependencies.jar'
             }
         }
-
-        
     }
 
     post {
         success {
-            echo 'Build and deployment successful!'
+            echo 'Build and execution successful!'
         }
         failure {
             echo 'Build failed!'
