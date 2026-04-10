@@ -5,12 +5,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.JavascriptExecutor;
+
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import io.github.bonigarcia.wdm.WebDriverManager;
 
 import java.time.Duration;
 
@@ -18,30 +16,19 @@ public class App {
 
     public static void main(String[] args) {
 
-        // Automatically configure GeckoDriver
-        WebDriverManager.firefoxdriver().setup();
+        // If geckodriver is NOT in system path, uncomment below:
+        // System.setProperty("webdriver.gecko.driver", "/path/to/geckodriver");
 
-        // Configure Firefox options
-        FirefoxOptions options = new FirefoxOptions();
-
-        // Enable headless mode for Jenkins
-        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
-        if (headless) {
-            options.addArguments("-headless");
-        }
-
-        // Launch Firefox browser
-        WebDriver driver = new FirefoxDriver(options);
+        WebDriver driver = new FirefoxDriver();
         driver.manage().window().maximize();
 
-        // Explicit wait
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         try {
 
-            // ==============================
-            // 1. SauceDemo Login
-            // ==============================
+            // =====================
+            // SauceDemo login
+            // =====================
             driver.get("https://www.saucedemo.com/");
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-name")))
@@ -50,12 +37,9 @@ public class App {
             driver.findElement(By.id("password")).sendKeys("secret_sauce");
             driver.findElement(By.id("login-button")).click();
 
-            wait.until(ExpectedConditions.urlContains("inventory"));
-            System.out.println("SauceDemo login successful.");
-
-            // ==============================
-            // 2. Practice Test Automation Login
-            // ==============================
+            // =====================
+            // Practice Test Automation login
+            // =====================
             driver.switchTo().newWindow(WindowType.TAB);
             driver.get("https://practicetestautomation.com/practice-test-login/");
 
@@ -65,54 +49,43 @@ public class App {
             driver.findElement(By.id("password")).sendKeys("Password123");
             driver.findElement(By.id("submit")).click();
 
-            wait.until(ExpectedConditions.urlContains("logged-in-successfully"));
-            System.out.println("Practice Test Automation login successful.");
-
-            // ==============================
-            // 3. Automation Exercise - Add to Cart
-            // ==============================
+            // =====================
+            // Automation Exercise
+            // =====================
             driver.switchTo().newWindow(WindowType.TAB);
             driver.get("https://automationexercise.com");
 
-            // Wait for page to load
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
-
-            // Locate first product's Add to Cart button
+            // Wait for product button
             WebElement addToCart = wait.until(
-                    ExpectedConditions.elementToBeClickable(
-                            By.xpath("(//a[@data-product-id='1'])[1]")
-                    )
+                    ExpectedConditions.elementToBeClickable(By.xpath("(//a[@data-product-id='1'])[1]"))
             );
 
-            // Scroll to the element
+            // Scroll to element
             ((JavascriptExecutor) driver)
-                    .executeScript("arguments[0].scrollIntoView({block:'center'});", addToCart);
+                    .executeScript("arguments[0].scrollIntoView(true);", addToCart);
 
-            // Hide ad iframes to prevent click interception
+            // Hide ad iframes (prevents click interception)
             ((JavascriptExecutor) driver).executeScript(
                     "document.querySelectorAll('iframe').forEach(el => el.style.display='none');"
             );
 
-            // Click using JavaScript
+            // Click using JavaScript (reliable)
             ((JavascriptExecutor) driver)
                     .executeScript("arguments[0].click();", addToCart);
 
             // Click Continue Shopping
             WebElement continueBtn = wait.until(
                     ExpectedConditions.elementToBeClickable(
-                            By.xpath("//button[contains(text(),'Continue Shopping')]")
-                    )
+                            By.xpath("//button[contains(text(),'Continue Shopping')]"))
             );
+
             continueBtn.click();
 
-            System.out.println("Automation Exercise: Item added to cart successfully.");
-            System.out.println("\nAll automations completed successfully.");
+            System.out.println("All automations completed successfully.");
 
         } catch (Exception e) {
-            System.err.println("An error occurred during execution:");
             e.printStackTrace();
         } finally {
-            // Close the browser
             driver.quit();
         }
     }
