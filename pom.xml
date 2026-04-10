@@ -43,7 +43,7 @@
     </dependencies>
 
     <build>
-        <finalName>MyMavenSeleniumApp04-1.0-SNAPSHOT</finalName>
+        <finalName>MyMavenSeleniumApp05-1.0-SNAPSHOT</finalName>
         <plugins>
 
             <!-- Compiler Plugin -->
